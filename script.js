@@ -32,23 +32,43 @@ function create(tag, props, ...children){
 
 const root = document.getElementById('root')
 
-const button = create('button', {className: 'btn btn-outline-secondary'}, 'Нажми на меня!')
+const button = create('button', {className: 'btn btn-outline-secondary'}, 'Создать')
 const input = create('input', {className: 'form-control', attr: {type: 'text'}})
 const divButton = create('div', {className: 'input-group-append'}, button)
 const divGroup = create('div', {className: 'input-group'}, input,  divButton)
 
-
-
 root.append(divGroup)
 
-const heandleClick = (a) => (event) => console.log(a++, event)
+// Event
 
-button.onclick = heandleClick
+const heandleClick = (event) => {
+    if (input.value !== ''){
+        root.append(create('p', {}, input.value))
+        input.value = ''
+    } else {
+        input.focus()
+    }
+}
+button.addEventListener('click', heandleClick)
+input.addEventListener('keypress', (event) => {
+    if (event.code === 'Enter'){
+        heandleClick()
+    }
+})
 
-button.addEventListener('click', heandleClick(1))
-setTimeout(
- () => {button.removeEventListener('click', heandleClick)} , 3000
-)
+
+
+
+
+
+
+
+// button.onclick = heandleClick
+
+// button.addEventListener('click', heandleClick(1))
+// setTimeout(
+//  () => {button.removeEventListener('click', heandleClick)} , 3000
+// )
 
 
 

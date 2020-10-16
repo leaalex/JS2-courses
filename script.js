@@ -27,6 +27,11 @@ function create(tag, props, ...children){
             }
         }
     )
+    if (props.events) Object.keys(props.events).forEach(
+        (event) => {
+            element.addEventListener(event, props.events[event])
+        }
+    )
     return element
 }
 
@@ -35,7 +40,7 @@ const root = document.getElementById('root')
 const button = create('button', {className: 'btn btn-outline-secondary'}, 'Создать')
 const input = create('input', {className: 'form-control', attr: {type: 'text'}})
 const divButton = create('div', {className: 'input-group-append'}, button)
-const divGroup = create('div', {className: 'input-group'}, input,  divButton)
+const divGroup = create('div', {className: 'input-group mb-4'}, input,  divButton)
 
 root.append(divGroup)
 
@@ -43,7 +48,11 @@ root.append(divGroup)
 
 const heandleClick = (event) => {
     if (input.value !== ''){
-        root.append(create('p', {}, input.value))
+        const events = {
+            'mouseover': function() { this.style.border = '1px solid red'},
+            'mouseout': function() { this.style.border = ''}
+        }
+        root.append(task(input.value))
         input.value = ''
     } else {
         input.focus()
@@ -57,6 +66,20 @@ input.addEventListener('keypress', (event) => {
 })
 
 
+function task (text){
+return create('div', {className:"input-group"}, 
+            create('div', {className:"input-group-prepend"}, 
+                create('div', {className:"input-group-text"}, 
+                    create('input', {attr: { type : "checkbox"}}, )
+                )
+            ),
+            create('input', {className:"form-control" , attr: {type: 'text' , disabled: 'true' , value: text}} ),
+            create('div', {className:"input-group-append"}, 
+                create('button', {className:"btn btn-outline-secondary", attr: {type: 'button'}}, 'Редактировать')
+            )
+        )
+
+}
 
 
 

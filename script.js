@@ -67,15 +67,48 @@ input.addEventListener('keypress', (event) => {
 
 
 function task (text){
+    const actionButton = {
+        'click': function(event) {
+            if (this.innerText === 'Сохранить'){
+                this.parentNode.previousElementSibling.setAttribute('disabled', true)
+                this.innerText = 'Редактировать'
+            } else {
+                this.parentNode.previousElementSibling.removeAttribute('disabled')
+                this.innerText = 'Сохранить'
+            }
+        }
+    }
+    const actionInput = {
+        'keyup': function(event) {
+            if(event.key === 'Escape'){
+                this.value = this.dataset.value
+                this.setAttribute('disabled', true)
+                this.nextElementSibling.firstElementChild.innerText = 'Редактировать'
+            }
+        }
+    }
+
+    const actionCheckbox = {
+        'change': function(event){
+            if (this.checked === true) {
+                    this.parentNode.parentNode.parentNode.lastElementChild.classList.add('d-none')
+                } else {
+                this.parentNode.parentNode.parentNode.lastElementChild.classList.remove('d-none')
+            }
+
+        }
+    }
+
+
 return create('div', {className:"input-group"}, 
             create('div', {className:"input-group-prepend"}, 
                 create('div', {className:"input-group-text"}, 
-                    create('input', {attr: { type : "checkbox"}}, )
+                    create('input', {attr: { type : "checkbox"}, events: actionCheckbox}, )
                 )
             ),
-            create('input', {className:"form-control" , attr: {type: 'text' , disabled: 'true' , value: text}} ),
+            create('input', {className:"form-control", events: actionInput, data: {value: text}, attr: {type: 'text' , disabled: 'true' , value: text}} ),
             create('div', {className:"input-group-append"}, 
-                create('button', {className:"btn btn-outline-secondary", attr: {type: 'button'}}, 'Редактировать')
+                create('button', {id:'id_121', className:"btn btn-outline-secondary", events: actionButton, attr: {type: 'button'}}, 'Редактировать')
             )
         )
 

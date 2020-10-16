@@ -1,3 +1,5 @@
+let els = {}
+
 function create(tag, props, ...children){
     const element = document.createElement(tag)
     if (props.id) element.id = props.id
@@ -32,6 +34,8 @@ function create(tag, props, ...children){
             element.addEventListener(event, props.events[event])
         }
     )
+
+    if (props.ref) els[props.ref] = element
     return element
 }
 
@@ -67,13 +71,18 @@ input.addEventListener('keypress', (event) => {
 
 
 function task (text){
+    shortID = Math.floor(1000 + (9000 * Math.random()))
+    const div = `div_${shortID}`
+    const button = `button_${shortID}`
+    const input = `input_${shortID}`
+
     const actionButton = {
         'click': function(event) {
             if (this.innerText === 'Сохранить'){
-                this.parentNode.previousElementSibling.setAttribute('disabled', true)
+                els[input].setAttribute('disabled', true)
                 this.innerText = 'Редактировать'
             } else {
-                this.parentNode.previousElementSibling.removeAttribute('disabled')
+                els[input].removeAttribute('disabled')
                 this.innerText = 'Сохранить'
             }
         }
@@ -83,7 +92,7 @@ function task (text){
             if(event.key === 'Escape'){
                 this.value = this.dataset.value
                 this.setAttribute('disabled', true)
-                this.nextElementSibling.firstElementChild.innerText = 'Редактировать'
+                els[button].innerText = 'Редактировать'
             }
         }
     }
@@ -91,9 +100,9 @@ function task (text){
     const actionCheckbox = {
         'change': function(event){
             if (this.checked === true) {
-                    this.parentNode.parentNode.parentNode.lastElementChild.classList.add('d-none')
+                els[div].classList.add('d-none')
                 } else {
-                this.parentNode.parentNode.parentNode.lastElementChild.classList.remove('d-none')
+                els[div].classList.remove('d-none')
             }
 
         }
@@ -106,9 +115,9 @@ return create('div', {className:"input-group"},
                     create('input', {attr: { type : "checkbox"}, events: actionCheckbox}, )
                 )
             ),
-            create('input', {className:"form-control", events: actionInput, data: {value: text}, attr: {type: 'text' , disabled: 'true' , value: text}} ),
-            create('div', {className:"input-group-append"}, 
-                create('button', {id:'id_121', className:"btn btn-outline-secondary", events: actionButton, attr: {type: 'button'}}, 'Редактировать')
+            create('input', {ref: input, className:"form-control", events: actionInput, data: {value: text}, attr: {type: 'text' , disabled: 'true' , value: text}} ),
+            create('div', {ref: div, className:"input-group-append"}, 
+                create('button', {ref: button, id:'id_121', className:"btn btn-outline-secondary", events: actionButton, attr: {type: 'button'}}, 'Редактировать')
             )
         )
 

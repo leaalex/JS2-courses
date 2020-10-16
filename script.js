@@ -1,4 +1,6 @@
-let els = {}
+window.onload = function() {
+
+els = {}
 
 function create(tag, props, ...children){
     const element = document.createElement(tag)
@@ -70,7 +72,7 @@ input.addEventListener('keypress', (event) => {
 })
 
 
-function task (text){
+function task (text , completed=false){
     shortID = Math.floor(1000 + (9000 * Math.random()))
     const div = `div_${shortID}`
     const button = `button_${shortID}`
@@ -83,6 +85,7 @@ function task (text){
                 this.innerText = 'Редактировать'
             } else {
                 els[input].removeAttribute('disabled')
+                els[input].focus()
                 this.innerText = 'Сохранить'
             }
         }
@@ -112,7 +115,10 @@ function task (text){
 return create('div', {className:"input-group"}, 
             create('div', {className:"input-group-prepend"}, 
                 create('div', {className:"input-group-text"}, 
-                    create('input', {attr: { type : "checkbox"}, events: actionCheckbox}, )
+                    (completed)?
+                    create('input', {attr: { type : "checkbox",   checked: completed }, events: actionCheckbox}, )
+                    :
+                    create('input', {attr: { type : "checkbox",    }, events: actionCheckbox}, )
                 )
             ),
             create('input', {ref: input, className:"form-control", events: actionInput, data: {value: text}, attr: {type: 'text' , disabled: 'true' , value: text}} ),
@@ -120,45 +126,36 @@ return create('div', {className:"input-group"},
                 create('button', {ref: button, id:'id_121', className:"btn btn-outline-secondary", events: actionButton, attr: {type: 'button'}}, 'Редактировать')
             )
         )
-
 }
 
+// BOM
+const buttonXHR = create('button', {className: "btn btn-primary"}, 'XHR')
+root.append(buttonXHR)
+
+buttonXHR.addEventListener('click', function(){
+    const xhr = new XMLHttpRequest()
+    xhr.open('GET', 'https://jsonplaceholder.typicode.com/todos/', true)
+    xhr.send()
+    xhr.onload = function(event){
+        if (xhr.status === 200) {
+            const data = JSON.parse(xhr.response) 
+            console.log(data)
+            data.forEach(function(taskData){
+                root.append(task(taskData.title, taskData.completed))
+            })
+        }
+    }
+})
 
 
+const buttonFetch = create('button', {className: "btn btn-primary"}, 'fetch')
+root.append(buttonFetch)
 
-
-
-// button.onclick = heandleClick
-
-// button.addEventListener('click', heandleClick(1))
-// setTimeout(
-//  () => {button.removeEventListener('click', heandleClick)} , 3000
-// )
-
-
-
-// const eventClick = (event)=> {
-//     if (event.target.tagName === 'INPUT'){
-//         event.target.value = "Пиши что-нибудь!"
-//         hendlerKeypress = (event)=>{
-//             if (event.code === "Enter") {
-//                 event.target.removeEventListener('keypress', hendlerKeypress)
-//             } else {
-//                 console.log(event.target.value)
-//             }
-//         }
-//         event.target.addEventListener('keypress', hendlerKeypress)
-//     }
-//     if (event.target.tagName === 'BUTTON'){
-//         event.target.innerText = event.target.innerText.toUpperCase()
-//     }
-// }
-// root.addEventListener('click', eventClick)
-
-// button.addEventListener('dblclick', (event)=> {
-//     console.log('Двойное Нажатие событие 2  ')
-//     button.removeEventListener('click', eventClick)
-// })
-
-// console.log(button.onclick) 
-
+buttonFetch.addEventListener('click', function(){
+fetch('https://jsonplaceholder.typicode.com/todos/')
+    .then((data) => data.json())
+    .then((json) => json.forEach(function(taskData){
+        root.append(task(taskData.title, taskData.completed))
+    }))
+})
+}
